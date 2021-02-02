@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 const { invalidRoutesHandler, globalErrorHandler } = require('zv-express-error-handler');
 
 const photosRouter = require('./routes/photosRoutes');
@@ -7,6 +8,7 @@ const photosRouter = require('./routes/photosRoutes');
 const app = express();
 
 // MIDDLEWARE
+app.use(cors());
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
