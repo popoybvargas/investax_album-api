@@ -94,7 +94,8 @@ exports.deletePhoto = asyncCatch(async (req, res, next) =>
     console.log(`${photo.name} is deleted.`);
   });
 
-  res.status(204).send();
+  // res.status(204).send();
+  res.status(200).json({ message: 'OK' });
 });
 
 exports.getPhoto = asyncCatch(async (req, res, next) =>
@@ -110,4 +111,25 @@ exports.getPhoto = asyncCatch(async (req, res, next) =>
   });
   
   readable.on('end', () => res.end());
+});
+
+exports.deletePhotos = asyncCatch(async (req, res, next) =>
+{
+  
+
+  res.status(204).send();
+});
+
+const deletePhoto = asyncCatch(async params =>
+{
+  const photo = await Photo.findOneAndDelete(params);
+
+  if (!photo) return next(new AppError('💥 Photo does not exist!', 404));
+
+  await fs.unlink('./public' + photo.path, err =>
+  {
+    if (err) return next(new AppError(`💥 Error encountered deleting ${photo.name}!`));
+
+    console.log(`${photo.name} is deleted.`);
+  });
 });
