@@ -22,48 +22,29 @@ const schema = new mongoose.Schema(
   path:
   {
     type: String,
-    required: [ true, 'Path to the photo must be specified' ],
-    lowercase: true
+    required: [ true, 'Path to the photo must be specified' ]
   },
   raw:
   {
     type: String,
-    required: [ true, 'Full path to the photo must be specified' ],
+    required: [ true, 'URL to the photo must be specified' ],
     lowercase: true
   }
-// },
-// {
-//   toJSON: { virtuals: true },
-//   toObject: { virtuals: true }
-});
-
-schema.virtual('albumDisplay').get(function()
+},
 {
-  return this.album.charAt(0).toUpperCase() + this.album.slice(1);
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
-schema.virtual('pathDisplay').get(function()
-{
-  return this.path.replace(this.album, this.album.charAt(0).toUpperCase() + this.album.slice(1));
-  // return this.path.charAt(0).toUpperCase() + this.path.slice(1);
-});
+const uppercaseInitial = str => str.charAt(0).toUpperCase() + str.slice(1);
 
-// schema.pre(/^find/, function(next)
-// {
-//   this.start = Date.now();
-//   this.find({ secretTour: { $ne: true } });
-
-//   next();
-// });
-
-// schema.post(/^find/, function(docs, next)
-schema.post('find', function(docs, next)
+schema.post(/^find/, function(docs, next)
 {
   for (let i = 0; i < docs.length; i ++)
   {
-    docs[i].album = docs[i].albumDisplay;
-    docs[i].path = docs[i].pathDisplay;
-    docs[i].__v = undefined;
+    const { album, path } = docs[i];
+    docs[i].album = uppercaseInitial(album);
+    docs[i].path = path.replace(album, uppercaseInitial(album));
   }
   
   next();

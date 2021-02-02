@@ -38,7 +38,7 @@ exports.uploadPhotos = upload.array('documents');
 
 exports.getPhotosList = asyncCatch(async (req, res, next) =>
 {
-  let query = Photo.find();
+  let query = Photo.find().select('-_id -__v');
 
   if (req.body.skip) query.skip(req.body.skip);
 
