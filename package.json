@@ -4,8 +4,7 @@
   "description": "API for the Investax test Image Album application",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "start:dev": "NODE_ENV=development /Users/popoyvargas/coding/projects/APIs/node_modules/nodemon/bin/nodemon.js server.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
