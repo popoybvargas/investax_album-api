@@ -14,7 +14,7 @@ app.use(express.static(`${__dirname}/public`));
 app.get('/health', (req, res) => res.status(200).json({ message: 'OK' }));
 app.use('/photos', photosRouter);
 // INVALID ROUTES
-// app.all('*', invalidRoutesHandler);
+app.all('*', invalidRoutesHandler);
 app.use(globalErrorHandler);
 
 module.exports = app;

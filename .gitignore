@@ -1,2 +1,7 @@
 .DS_Store
 node_modules/
+public/albums/food/*
+public/albums/nature/*
+public/albums/other/*
+public/albums/personal/*
+public/albums/travel/*

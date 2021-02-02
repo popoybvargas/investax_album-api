@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 const { AppError, asyncCatch } = require('zv-express-error-handler');
 const multer = require('multer');
@@ -84,13 +85,11 @@ exports.savePhotosDetails = asyncCatch(async (req, res, next) =>
 
 exports.deletePhoto = asyncCatch(async (req, res, next) =>
 {
-  // const photo = await Photo.findOne(req.params);
-  // console.log(path.resolve('../public', photo.path));
   const photo = await Photo.findOneAndDelete(req.params);
 
   if (!photo) return next(new AppError('💥 Photo does not exist!', 404));
 
-  await fs.unlink(path.resolve('../public', photo.path), err =>
+  await fs.unlink('./public' + photo.path, err =>
   {
     if (err) return next(new AppError(`💥 Error encountered deleting ${photo.name}!`));
 
@@ -112,24 +111,3 @@ exports.getPhoto = asyncCatch(async (req, res, next) =>
     data: { link: photo.raw }
   });
 });
-
-// exports.checkID = (req, res, next, val) =>
-/* 
-
-exports.updateTour = asyncCatch(async (req, res, next) =>
-{
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body,
-  {
-    new: true,
-    runValidators: true
-  });
-
-  if (!tour) return next(new AppError('💥 Invalid ID!', 404));
-
-  res.status(200).json(
-  {
-    status: 'success',
-    data: { tour }
-  });
-});
- */
