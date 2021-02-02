@@ -81,9 +81,9 @@ exports.savePhotosDetails = asyncCatch(async (req, res, next) =>
   });
 });
 
-exports.deletePhoto = asyncCatch(async (req, res, next) =>
+const deletePhoto = asyncCatch(async params =>
 {
-  const photo = await Photo.findOneAndDelete(req.params);
+  const photo = await Photo.findOneAndDelete(params);
 
   if (!photo) return next(new AppError('💥 Photo does not exist!', 404));
 
@@ -93,8 +93,12 @@ exports.deletePhoto = asyncCatch(async (req, res, next) =>
 
     console.log(`${photo.name} is deleted.`);
   });
+});
 
-  // res.status(204).send();
+exports.deletePhoto = asyncCatch(async (req, res, next) =>
+{
+  deletePhoto(req.params);
+
   res.status(200).json({ message: 'OK' });
 });
 
@@ -115,21 +119,19 @@ exports.getPhoto = asyncCatch(async (req, res, next) =>
 
 exports.deletePhotos = asyncCatch(async (req, res, next) =>
 {
-  
+  if (!Array.isArray(req.body)) return next(new AppError('Payload should be an array of objects', 400));
 
-  res.status(204).send();
-});
-
-const deletePhoto = asyncCatch(async params =>
-{
-  const photo = await Photo.findOneAndDelete(params);
-
-  if (!photo) return next(new AppError('💥 Photo does not exist!', 404));
-
-  await fs.unlink('./public' + photo.path, err =>
+  for (let i in req.body)
   {
-    if (err) return next(new AppError(`💥 Error encountered deleting ${photo.name}!`));
+    const { album, documents } = req.body[i];
+    const docsArray = documents.split(', ');
 
-    console.log(`${photo.name} is deleted.`);
-  });
+    for (let i = 0; i < docsArray.length; i++)
+    {
+      deletePhoto({ album: album.toLowerCase(), name: docsArray[i] });
+    }
+  }
+
+  // res.status(204).send();
+  res.status(200).json({ message: 'OK' });
 });
