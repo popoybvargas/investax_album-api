@@ -1,6 +1,4 @@
 const fs = require('fs');
-const path = require('path');
-const os = require('os');
 
 const { AppError, asyncCatch } = require('zv-express-error-handler');
 const multer = require('multer');
@@ -101,13 +99,15 @@ exports.deletePhoto = asyncCatch(async (req, res, next) =>
 
 exports.getPhoto = asyncCatch(async (req, res, next) =>
 {
-  const photo = await Photo.find(req.params);
-  console.log(photo);
+  const photo = await Photo.findOne(req.params);
+  
   if (!photo) return next(new AppError('💥 Photo does not exist!', 404));
 
-  res.status(200).json(
+  const readable = fs.createReadStream(`./public${photo.path}`);
+  readable.on('data', chunk =>
   {
-    status: 'success',
-    data: { link: photo.raw }
+    res.write(chunk);
   });
+  
+  readable.on('end', () => res.end());
 });
